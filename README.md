@@ -1,0 +1,1 @@
+Data Source: https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000?resource=download-directory&select=HAM10000_metadata.csv
