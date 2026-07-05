@@ -43,11 +43,11 @@ class HAM10000Dataset(Dataset):
         img = Image.open(path).convert('RGB')
         if self.transform:
             img = self.transform(img)
-        label = DX_TO_IDX(row['dx'])
+        label = DX_TO_IDX[row['dx']]
         return (img, label)
 
     def _resolve_image_path(self, image_id):
-        return self.image_dir_path + image_id + '.jpg'
+        return os.path.join(self.image_dir_path, image_id, '.jpg')
 
 
 # -----------------------------------------------------------------------
@@ -69,3 +69,30 @@ def compute_class_weights(train_df):
 
     for dx in DX_TO_IDX:
         weights[DX_TO_IDX[dx]] = total / (num_classes * counts[dx])
+
+    return weights
+
+# -----------------------------------------------------------------------
+# Transform pipelines
+# -----------------------------------------------------------------------
+IMAGENET_MEAN = [0.485, 0.456, 0.406]
+IMAGENET_STD = [0.229, 0.224, 0.225]
+
+def get_train_transforms(image_size=224):
+    return transforms.Compose([
+        transforms.Resize((image_size, image_size)),
+        transforms.RandomHorizontalFlip(p=0.5),
+        transforms.RandomVerticalFlip(p=0.5),
+        transforms.RandomRotation(degrees=20),
+        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)
+    ])
+
+
+def get_eval_transforms(image_size=224):
+    return transforms.Compose([
+        transforms.Resize((image_size, image_size)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)
+    ])
