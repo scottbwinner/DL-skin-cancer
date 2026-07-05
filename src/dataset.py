@@ -47,7 +47,7 @@ class HAM10000Dataset(Dataset):
         return (img, label)
 
     def _resolve_image_path(self, image_id):
-        return os.path.join(self.image_dir_path, image_id, '.jpg')
+        return os.path.join(self.image_dir_path, image_id + '.jpg')
 
 
 # -----------------------------------------------------------------------
