@@ -39,6 +39,7 @@ def train(
     logger = tb.SummaryWriter(log_dir)
 
     model = model.to(device)
+    loss_func = loss_func.to(device)
     max_val_f1 = -1
 
     best_state_dict = {}
@@ -59,7 +60,6 @@ def train(
 
         model.train() # set model to training mode (parameter training = True)
         for batch_idx, (images, labels) in enumerate(train_loader):
-        #for img, label in train_data:
             images, labels = images.to(device), labels.to(device)
 
             # Compute gradient and update weights
