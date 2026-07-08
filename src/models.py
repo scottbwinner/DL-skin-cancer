@@ -167,3 +167,74 @@ class ResNetFrozen(torch.nn.Module):
             pred (torch.LongTensor): class labels {0, 1, ..., 6} with shape (b,)
         """
         return self(x).argmax(dim=1)
+    
+
+class ResNetFineTuned(torch.nn.Module):
+    def __init__(
+        self,
+        unfrozen_layers: list[str],
+        num_classes: int = 7
+        
+    ):
+        """
+        A ResNet-18 backbone pretrained on ImageNet, with some backbone weights frozen and some unfrozen, and a new trainable linear classifier head.
+
+        Args:
+        num_classes: int, number of output. In our case classes of skin lesion types we are trying to classify
+        """
+        super().__init__()
+
+        self.unfrozen_layers = unfrozen_layers
+        self.complete_frozen_layers = []
+        self.complete_unfrozen_layers = []
+
+        # Load ResNet-18 pre-trained model
+        self.model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
+
+        # Freeze chosen parameters
+        for name, param in self.model.named_parameters():
+            if name.startswith("fc"):
+                continue
+            elif any(name.startswith(layer) for layer in self.unfrozen_layers):
+                param.requires_grad = True
+                self.complete_unfrozen_layers.append(param)
+                print("Unfrozen: ", name)
+            else:
+                param.requires_grad = False
+                self.complete_frozen_layers.append(param)
+                print("Frozen: ", name)
+
+
+        # Replace the final layer
+        self.model.fc = torch.nn.Linear(self.model.fc.in_features, num_classes)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Args:
+            x: tensor (b, 3, h, w) image
+
+        Returns:
+            tensor (b, num_classes) logits
+        """
+        return self.model(x)
+
+    def predict(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Used for inference, returns class labels
+
+        Args:
+            x (torch.FloatTensor): image with shape (b, 3, h, w) and vals in [0, 1]
+
+        Returns:
+            pred (torch.LongTensor): class labels {0, 1, ..., 6} with shape (b,)
+        """
+        return self(x).argmax(dim=1)
+    
+    def get_complete_frozen_layers(self):
+        return self.complete_frozen_layers
+    
+    def get_complete_unfrozen_layers(self):
+        return self.complete_unfrozen_layers
+    
+    def get_head(self):
+        return self.model.fc.parameters()
