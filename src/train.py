@@ -15,7 +15,8 @@ def train(
     val_loader,
     loss_func: any,
     optimizer: any,
-    exp_dir: str = "logs",
+    exp_dir: str = "models",
+    log_dir: str = "logs",
     num_epoch: int = 50,
     #batch_size: int = 128,
     seed: int = 2026,
@@ -35,7 +36,9 @@ def train(
     np.random.seed(seed)
 
     # directory with timestamp to save tensorboard logs and model checkpoints
-    log_dir = Path(exp_dir) / f"{model_name}_{datetime.now().strftime('%m%d_%H%M%S')}"
+    full_model_name = f"{model_name}_{datetime.now().strftime('%m%d_%H%M%S')}"
+    log_dir = Path(log_dir) / full_model_name
+    exp_dir = Path(exp_dir)
     logger = tb.SummaryWriter(log_dir)
 
     model = model.to(device)
@@ -133,8 +136,8 @@ def train(
 
 
     # save a copy of model weights in the log directory
-    torch.save(best_state_dict, log_dir / f"{model_name}.th")
-    print(f"Model saved to {log_dir / f'{model_name}.th'}")
+    torch.save(best_state_dict, exp_dir / f"{full_model_name}.th")
+    print(f"Model saved to {log_dir / f'{full_model_name}.th'}")
 
     # return trained model
     model.load_state_dict(best_state_dict)
