@@ -1,4 +1,5 @@
 import torch
+import torchvision.models as models
 
 class CNN(torch.nn.Module):
     class Block(torch.nn.Module):
@@ -109,6 +110,51 @@ class CNN(torch.nn.Module):
             tensor (b, num_classes) logits
         """
         return self.network(x)
+
+    def predict(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Used for inference, returns class labels
+
+        Args:
+            x (torch.FloatTensor): image with shape (b, 3, h, w) and vals in [0, 1]
+
+        Returns:
+            pred (torch.LongTensor): class labels {0, 1, ..., 6} with shape (b,)
+        """
+        return self(x).argmax(dim=1)
+    
+class ResNetFrozen(torch.nn.Module):
+    def __init__(
+        self,
+        num_classes: int = 7
+    ):
+        """
+        A ResNet-18 backbone pretrained on ImageNet, with all backbone weights frozen and a new trainable linear classifier head.
+
+        Args:
+        num_classes: int, number of output. In our case classes of skin lesion types we are trying to classify
+        """
+        super().__init__()
+
+        # Load ResNet-18 pre-trained model
+        self.model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
+
+        # Freeze all parameters
+        for param in self.model.parameters():
+            param.requires_grad = False
+
+        # Replace the final layer
+        self.model.fc = torch.nn.Linear(self.model.fc.in_features, num_classes)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Args:
+            x: tensor (b, 3, h, w) image
+
+        Returns:
+            tensor (b, num_classes) logits
+        """
+        return self.model(x)
 
     def predict(self, x: torch.Tensor) -> torch.Tensor:
         """
