@@ -1,16 +1,18 @@
 Data Source: https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000?resource=download-directory&select=HAM10000_metadata.csv
 
-Model History:
-CNN1: baseline_cnn_0707_161948
+## Model History
 
-ResNetFrozen1: ResNetFrozen_0707_204931
-    - 50 epochs
-ResNetFrozen2: ResNetFrozen_0707_212302
-    - 100 epochs
+**CNN1**: baseline_cnn_0707_161948
+
+**ResNetFrozen1**: ResNetFrozen_0707_204931  
+(50 epochs)
+    
+**ResNetFrozen2**: ResNetFrozen_0707_212302  
+(100 epochs)
 
 
-ResNetFineTuned1: ResNetFineTuned-Layer4Unfrozen_0708_010323
-    - Unfrozen Layers: ['layer4', 'fc']
+**ResNetFineTuned1**: ResNetFineTuned-Layer4Unfrozen_0708_010323  
+Unfrozen Layers: ['layer4', 'fc']
 
 
 Future plans: 
