@@ -1,4 +1,3 @@
-import argparse
 from datetime import datetime
 from pathlib import Path
 
@@ -7,20 +6,34 @@ import torch
 import torch.utils.tensorboard as tb
 from sklearn.metrics import f1_score
 import copy
+from torch.utils.data import Dataset, DataLoader
 
 def train(
-    model,
+    model: torch.nn.Module,
     model_name: str,
-    train_loader,
-    val_loader,
-    loss_func: any,
-    optimizer: any,
+    train_loader: DataLoader,
+    val_loader: DataLoader,
+    loss_func: torch.nn.Module,
+    optimizer: torch.optim.Optimizer,
     exp_dir: str = "models",
     log_dir: str = "logs",
     num_epoch: int = 50,
-    #batch_size: int = 128,
     seed: int = 2026,
 ):
+    """
+    Training algorithm for our models
+
+    model: torch.nn.Module, model to be trained
+    model_name: str, name of model to be trained
+    train_loader: DataLoader, DataLoader object attached to training dataset
+    val_loader: DataLoader, DataLoader object attached to validation dataset
+    loss_func: torch.nn.Module, loss function to use for training
+    optimizer: torch.optim.Optimizer, optimizer to use for training
+    exp_dir: str, directory to export trained models to
+    log_dir: str, directory to export logs to
+    num_epoch: int, number of epochs to train
+    seed: int, randomness seed
+    """
     if torch.cuda.is_available():
         device = torch.device("cuda")
         print("Using CUDA")
@@ -48,7 +61,7 @@ def train(
     best_state_dict = {}
 
     global_step = 0
-    metrics = {"train_acc": [], "val_acc": [], "train_macro_f1": [], "val_macro_f1": []}
+    metrics = {"rain_acc": [], "val_acc": [], "train_macro_f1": [], "val_macro_f1": []}
 
     # training loop
     for epoch in range(num_epoch):
