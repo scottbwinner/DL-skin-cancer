@@ -13,9 +13,9 @@ ResNetFineTuned1: ResNetFineTuned-Layer4Unfrozen_0708_010323
     - Unfrozen Layers: ['layer4', 'fc']
 
 
-TODO: 
+Future plans: 
  - Tensorboard inside the JupyterNotebooks?
  - ResNetFineTuned with heavier melenoma weights?
  - ResNetFineTuned with 3 and 4 unfrozen.
  - README explanation
- - Presentation added to GitHub?
+ - Presentation added to GitHub
