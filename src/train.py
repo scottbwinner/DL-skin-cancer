@@ -61,7 +61,7 @@ def train(
     best_state_dict = {}
 
     global_step = 0
-    metrics = {"rain_acc": [], "val_acc": [], "train_macro_f1": [], "val_macro_f1": []}
+    metrics = {"train_acc": [], "val_acc": [], "train_macro_f1": [], "val_macro_f1": []}
 
     # training loop
     for epoch in range(num_epoch):
